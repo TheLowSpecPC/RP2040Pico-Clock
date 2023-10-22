@@ -21,25 +21,42 @@ from machine import I2C, Pin
 from ds1302 import DS1302
 from pico_i2c_lcd import I2cLcd
 
-I2C_ADDR     = 63
+I2C_ADDR     = 39
 I2C_NUM_ROWS = 2
 I2C_NUM_COLS = 16
 
-i2c = I2C(0, sda=machine.Pin(0), scl=machine.Pin(1), freq=400000)
+sda = Pin(16, Pin.PULL_UP)
+
+scl = Pin(17, Pin.PULL_UP)
+
+i2c = I2C(0, sda=sda, scl=scl, freq=400000)
+print(i2c.scan())
 lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
 
-ds = DS1302(Pin(18),Pin(17),Pin(16))
+ds = DS1302(Pin(18),Pin(0),Pin(1))
 
 ds.date_time() # returns the current datetime.
 
-#ds.date_time([2023, 3, 2, 0, 8, 17, 50, 0]) # set datetime.
+#ds.date_time([2023, 10, 22, 0, 00, 09, 00, 0]) # set datetime.
 
-#ds.hour() # returns hour.
+ds.hour() # returns hour.
 #print(ds.date_time())
 
 
 while True:
+    apm = " PM"
+    
     (Y,M,D,day,hr,m,s)=ds.date_time()
+    if hr>12:
+        hr = hr-12
+        apm = " PM"
+    elif hr<12:
+        apm = " AM"
+        
+    if hr==0:
+        hr = 12
+        apm = " AM"
+    
     if s < 10:
         s = "0" + str(s)
     if m < 10:
@@ -52,11 +69,11 @@ while True:
         M = "0" + str(M)
         
     lcd.move_to(0,0)
-    lcd.putstr("Time:")
-    lcd.move_to(6,0)
-    lcd.putstr(str(hr) + ":" + str(m) + ":" + str(s))
+    lcd.putstr("Time")
+    lcd.move_to(5,0)
+    lcd.putstr(str(hr) + ":" + str(m) + ":" + str(s)+apm)
     lcd.move_to(0,1)
-    lcd.putstr("Date:")
-    lcd.move_to(6,1)
+    lcd.putstr("Date")
+    lcd.move_to(5,1)
     lcd.putstr(str(D) + "/" + str(M) + "/" + str(Y))
    
