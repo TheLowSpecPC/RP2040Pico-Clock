@@ -1,7 +1,5 @@
 # DS1302 +  16x2 Character LCD 
 
-Youtube link: https://youtu.be/5jylVizMTa8
-
 This tutorial we will take a look at the **DS1302** real-time clock module. We will connect it to the Raspberry Pi Pico to display the date and time on the popular **16x2 Character LCD with I2C**.
 
 
